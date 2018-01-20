@@ -3,143 +3,143 @@
 #include<string.h>
 #define N 4
 
-#define COLPITO 2
-#define ACQUA 3
-#define BARCA 1
-#define VUOTO 0
+#define HIT 2
+#define WATER 3
+#define SHIP 1
+#define EMPTY 0
 
-void azzera(int tabella[N][N]) {
+void clears(int table[N][N]) {
 	int i,j;
 	for (i = 0; i < N; i++)
 		for (j = 0; j < N; j++)
-			tabella[i][j]=0;
+			table[i][j]=0;
 }
 
-void printa(int tabella[N][N]) {
-	char cella;
+void print(int table[N][N]) {
+	char cell;
 	int i, j;
 	printf("  1 2 3 4\n ---------\n");
 	for (i = 0; i < N; i++) {
 		printf("%d", i + 1);
 		for (j = 0; j < N; j++) {
-			if (tabella[i][j] == COLPITO)
-				cella = 'x';
-			else if (tabella[i][j] == ACQUA)
-				cella = 'o';
+			if (table[i][j] == HIT)
+				cell = 'x';
+			else if (table[i][j] == WATER)
+				cell = 'o';
 			else
-				cella = ' ';
-			printf("|%c", cella);
+				cell = ' ';
+			printf("|%c", cell);
 		}
 		printf("|\n ---------\n");
 	}
 }
 
-void printaInit(int tabella[N][N]) {
-	char cella;
+void printInit(int table[N][N]) {
+	char cell;
 	int i, j;
 	printf("  1 2 3 4\n ---------\n");
 	for (i = 0; i < N; i++) {
 		printf("%d", i + 1);
 		for (j = 0; j < N; j++) {
-			if (tabella[i][j] == COLPITO || tabella[i][j] == BARCA)
-				cella = 'x';
+			if (table[i][j] == HIT || table[i][j] == SHIP)
+				cell = 'x';
 			else
-				cella = ' ';
-			printf("|%c", cella);
+				cell = ' ';
+			printf("|%c", cell);
 		}
 		printf("|\n ---------\n");
 	}
 }
 
-int inizializza(int tabella[N][N]) {
-	int navi = 0,x,y;
+int init(int table[N][N]) {
+	int ships = 0,x,y;
 	do {
 		system("clear");
-		printaInit(tabella);
-		printf("Dove piazzo la nave (x,y) (0,0 per uscire) ? ");
+		printInit(table);
+		printf("Where i have to put the ship overbearingly (x,y) (0,0 to exit) ? ");
 		scanf("%d,%d", &x, &y);
-		if (x > 0 && x <= 4 && y > 0 && y <= 4 && tabella[x-1][y-1]==VUOTO) {
-			tabella[x - 1][y - 1] = BARCA;
-			navi++;
+		if (x > 0 && x <= 4 && y > 0 && y <= 4 && table[x-1][y-1]==EMPTY) {
+			table[x - 1][y - 1] = SHIP;
+			ships++;
 		} else if (x == 0 && y == 0)
 			system("clear");
 		else
-			printf("No dai sul serio.\n");
+			printf("No ok, seriously.\n");
 	} while (x != 0 || y != 0);
-	return navi;
+	return ships;
 }
 
-int isThere(int matrice[N][N], int numero) {
+int isThere(int matrix[N][N], int num) {
 	int i, j;
 	for (i = 0; i < N; i++)
 		for (j = 0; j < N; j++)
-			if (matrice[i][j] = numero)
+			if (matrix[i][j] = num)
 				return 1;
 	return 0;
 }
 
 
-void status(int tabella[N][N], int attempt) {
-	printf("Tentativi effettuati: %d\n\n", attempt);
-	printa(tabella);
+void status(int table[N][N], int attempt) {
+	printf("Performed attempts: %d\n\n", attempt);
+	print(table);
 }
 
 
-//restituisce 0 se già usata, 1 se colpito, 3 se buco nell'acqua
-int battaglia(int tabella[N][N], int x, int y) {
-	if (tabella[x][y] == VUOTO) {
-		tabella[x][y] = ACQUA;
-		return ACQUA;
-	} else if (tabella[x][y] == BARCA) {
-		tabella[x][y] = COLPITO;
+//return 0 if already used, 1 if hit, 3 if hole in the water
+int fight(int table[N][N], int x, int y) {
+	if (table[x][y] == EMPTY) {
+		table[x][y] = WATER;
+		return WATER;
+	} else if (table[x][y] == SHIP) {
+		table[x][y] = HIT;
 		return 1;
 	} else
 		return 0;
 }
 
-//restituisce l'esito di "battaglia" o 4 se fuori coordinate
-int input(int tabella[N][N], int *tentativi, int *navi) {
-	int x, y, esito;
-	status(tabella, *tentativi);
-	printf("\nInserisci le coordinate dove sparare (x,y): ");
+//return the result of "fight" or 4 of out of coordinates
+int input(int table[N][N], int *attempts, int *ships) {
+	int x, y, result;
+	status(table, *attempts);
+	printf("\nEnter coordinates where shoot (x,y): ");
 	scanf("%d,%d", &x, &y);
 	if (x > 0 && x <= 4 && y > 0 && y <= 4) {
-		esito = battaglia(tabella, x-1, y-1);
-		(*tentativi)++;
-		if (esito == 1)
-			(*navi)--;
-		return esito;
+		result = fight(table, x-1, y-1);
+		(*attempts)++;
+		if (result == 1)
+			(*ships)--;
+		return result;
 	} else
 		return 4;
 }
 
 int main() {
-	int tentativi=0,tabella[N][N],navi,esito;
-	azzera(tabella);
+	int attempts=0,table[N][N],ships,result;
+	clears(table);
 	
-	navi=inizializza(tabella);
+	ships=init(table);
 
-	esito = input(tabella, &tentativi, &navi);
+	result = input(table, &attempts, &ships);
 
 	do {
 		system("clear");
-		if (esito == 0)
-			printf("Gia' colpito li' baby!\n\n");
-		else if (esito == 1)
-			printf("Colpito!\n\n");
-		else if (esito == 3)
-			printf("Buco nell'acqua!\n\n");
-		else if (esito == 4)
-			printf("Inseriscile bene le coordinate\n\n");
+		if (result == 0)
+			printf("Already hit there, baby!\n\n");
+		else if (result == 1)
+			printf("Hit!\n\n");
+		else if (result == 3)
+			printf("Hole in the water!\n\n");
+		else if (result == 4)
+			printf("Enter the coordinates correctly\n\n");
 		else;
-		esito = input(tabella, &tentativi, &navi);
-	} while (tentativi<10&&navi>0);
+		result = input(table, &attempts, &ships);
+	} while (attempts<10&&ships>0);
 
 	system("clear");
-	status(tabella, tentativi);
-	printf("\nBene, gioco finito.\n");
-	if (navi <= 0)
-		printf("Bravissimo, hai vinto.\n\n");
+	status(table, attempts);
+	printf("\nGood, game over.\n");
+	if (ships <= 0)
+		printf("Very good, you win.\n\n");
 	else
-		printf("Hai perzo, fine tentativi.\n\n");
+		printf("You lose, end of attempts.\n\n");
 }
